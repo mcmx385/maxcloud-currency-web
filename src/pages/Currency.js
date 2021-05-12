@@ -43,7 +43,7 @@ class Currency extends Component {
     return Object.keys(this.state.available).map((key, id) => {
       return (
         <option value={key} key={id}>
-          {key} ({this.state.available[key]})
+          {key}({this.state.available[key]})
         </option>
       )
     })
@@ -51,32 +51,45 @@ class Currency extends Component {
 
   // Edit fields
   setBase = (base) => {
+    this.setState({ isLoading: true })
     this.setState({ base: base }, () => this.updateRate())
+    this.setState({ isLoading: false })
   }
   setTarget = (target) => {
+    this.setState({ isLoading: true })
     this.setState({ target: target }, () => this.updateRate())
+    this.setState({ isLoading: false })
   }
   setAmount = (amount) => {
+    this.setState({ isLoading: true })
     this.setState({ amount: amount !== '' ? parseInt(amount) : '' }, () =>
       this.convert(),
     )
+    this.setState({ isLoading: false })
   }
   setShowDays = (days) => {
+    this.setState({ isLoading: true })
     const start_date = pastDate(days)
     this.setState({ show_days: days, start_date }, () => this.getRateTS())
+    this.setState({ isLoading: false })
   }
 
   // Update actions
   convert = () => {
+    this.setState({ isLoading: true })
     this.setState({ result: this.state.rate * this.state.amount })
+    this.setState({ isLoading: false })
   }
   onSubmit = (e) => {
+    this.setState({ isLoading: true })
     if (e) {
       e.preventDefault()
     }
     this.convert()
+    this.setState({ isLoading: false })
   }
   async updateRate() {
+    this.setState({ isLoading: true })
     const url =
       'https://api.exchangerate.host/convert?from=' +
       this.state.base +
@@ -90,8 +103,10 @@ class Currency extends Component {
         this.getRateTS()
       })
     }
+    this.setState({ isLoading: false })
   }
   getRateTS = () => {
+    this.setState({ isLoading: true })
     const url =
       'https://api.exchangerate.host/timeseries?start_date=' +
       this.state.start_date +
@@ -106,8 +121,10 @@ class Currency extends Component {
       .then((result) => {
         this.setState({ timeSeries: result.rates }, () => this.updateChart())
       })
+    this.setState({ isLoading: false })
   }
   updateChart = () => {
+    this.setState({ isLoading: true })
     const datetime = Object.keys(this.state.timeSeries)
     const daterate = Object.values(this.state.timeSeries)
     var arr = []
@@ -115,6 +132,7 @@ class Currency extends Component {
       return arr.push(daterate[id][this.state.target])
     })
     this.setState({ chartData: arr, chartLabel: datetime })
+    this.setState({ isLoading: false })
   }
 
   render() {
@@ -123,12 +141,12 @@ class Currency extends Component {
         <Nav title="CurrencyApp" />
         <div className="container p-4">
           <div className="card p-4">
-            <h3>Currency Converter</h3>
+            <h3> Currency Converter </h3>
             <form action="" onSubmit={this.onSubmit}>
               <div className="row">
                 <div className="col-6">
                   <div className="form-group">
-                    <label htmlFor="">Base Currency</label>
+                    <label htmlFor=""> Base Currency </label>
                     <Dropdown
                       name="type"
                       selected={this.state.base}
@@ -139,7 +157,7 @@ class Currency extends Component {
                 </div>
                 <div className="col-6">
                   <div className="form-group">
-                    <label htmlFor="">Target Currency</label>
+                    <label htmlFor=""> Target Currency </label>
                     <Dropdown
                       name="type"
                       selected={this.state.target}
@@ -149,14 +167,16 @@ class Currency extends Component {
                   </div>
                 </div>
                 <div className="col text-center py-2">
-                  Current Rate:{' '}
-                  {this.state.rate ? this.state.rate : 'Loading...'}
+                  Current Rate:
+                  {this.state.rate && !this.state.isLoading
+                    ? this.state.rate
+                    : 'Loading...'}
                 </div>
               </div>
               <div className="row">
                 <div className="col">
                   <div className="form-group">
-                    <label htmlFor="">Amount (From)</label>
+                    <label htmlFor=""> Amount(From) </label>
                     <input
                       type="number"
                       className="form-control"
@@ -167,7 +187,7 @@ class Currency extends Component {
                 </div>
                 <div className="col">
                   <div className="form-group">
-                    <label htmlFor="">Amount (To)</label>
+                    <label htmlFor=""> Amount(To) </label>
                     <input
                       type="number"
                       className="form-control"
@@ -182,7 +202,7 @@ class Currency extends Component {
             <hr />
             <div className="row">
               <div className="col">
-                <h3>Past Exchange Rate</h3>
+                <h3> Past Exchange Rate </h3>
               </div>
               <div className="col">
                 <div className="input-group mb-3">
