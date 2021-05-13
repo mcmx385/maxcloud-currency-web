@@ -1,4 +1,4 @@
-# ReactJS Currency Converter
+# ReactJS Currency Converter and Historical Rates
 
 ## Getting started
 ```
