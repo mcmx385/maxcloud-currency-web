@@ -1,9 +1,13 @@
 # ReactJS Currency Converter
 ## Getting started
+```
 npm start
+```
 or
+```
 yarn build
 serve -s build
+```
 ## Currency converter
 Auto updates for result when changing base, symbol, amount
 ## Historical rate
