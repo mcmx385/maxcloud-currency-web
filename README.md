@@ -1,5 +1,8 @@
 # ReactJS Currency Converter and Historical Rates
 
+## Outcome
+<img src="https://raw.githubusercontent.com/mcmx385/reactjs-currency-converter/main/img/screenshot.png">
+
 ## Getting started
 ```
 npm start
