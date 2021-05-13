@@ -16,6 +16,7 @@ import UsersPage from './pages/Users'
 import IndexPage from './pages/Index'
 import RandUserPage from './pages/RandUser'
 import CurrencyPage from './pages/Currency'
+import HooksPage from './pages/Hooks'
 
 class App extends Component {
   render() {
@@ -29,6 +30,7 @@ class App extends Component {
           <Route exact path="/users" component={UsersPage} />
           <Route exact path="/randusers" component={RandUserPage} />
           <Route exact path="/currency" component={CurrencyPage} />
+          <Route exact path="/hooks" component={HooksPage} />
           <Route exact path="/404" component={NotFoundPage} />
           <Redirect to="/404" />
         </Switch>
