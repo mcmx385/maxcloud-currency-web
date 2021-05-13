@@ -28,7 +28,6 @@ class Currency extends Component {
     }
   }
   async componentDidMount() {
-    this.setState({ isLoading: true })
     const response = await fetch(
       'https://openexchangerates.org/api/currencies.json',
     )
@@ -51,45 +50,42 @@ class Currency extends Component {
 
   // Edit fields
   setBase = (base) => {
-    this.setState({ isLoading: true })
-    this.setState({ base: base }, () => this.updateRate())
-    this.setState({ isLoading: false })
+    this.setState({ ...this.state, base: base }, () => {
+      this.updateRate()
+    })
   }
   setTarget = (target) => {
-    this.setState({ isLoading: true })
-    this.setState({ target: target }, () => this.updateRate())
-    this.setState({ isLoading: false })
+    this.setState({ ...this.state, target: target }, () => {
+      this.updateRate()
+    })
   }
   setAmount = (amount) => {
-    this.setState({ isLoading: true })
-    this.setState({ amount: amount !== '' ? parseInt(amount) : '' }, () =>
-      this.convert(),
+    this.setState(
+      { ...this.state, amount: amount !== '' ? parseInt(amount) : '' },
+      () => this.convert(),
     )
-    this.setState({ isLoading: false })
   }
   setShowDays = (days) => {
-    this.setState({ isLoading: true })
     const start_date = pastDate(days)
-    this.setState({ show_days: days, start_date }, () => this.getRateTS())
-    this.setState({ isLoading: false })
+    this.setState({ ...this.state, show_days: days, start_date }, () => {
+      this.getRateTS()
+    })
   }
 
   // Update actions
   convert = () => {
-    this.setState({ isLoading: true })
-    this.setState({ result: this.state.rate * this.state.amount })
-    this.setState({ isLoading: false })
+    this.setState({
+      ...this.state,
+      result: this.state.rate * this.state.amount,
+    })
   }
   onSubmit = (e) => {
-    this.setState({ isLoading: true })
     if (e) {
       e.preventDefault()
     }
     this.convert()
-    this.setState({ isLoading: false })
   }
   async updateRate() {
-    this.setState({ isLoading: true })
     const url =
       'https://api.exchangerate.host/convert?from=' +
       this.state.base +
@@ -98,15 +94,13 @@ class Currency extends Component {
     const response = await fetch(url)
     if (response.ok) {
       const result = await response.json()
-      this.setState({ rate: result.result }, () => {
+      this.setState({ ...this.state, rate: result.result }, () => {
         this.convert()
         this.getRateTS()
       })
     }
-    this.setState({ isLoading: false })
   }
   getRateTS = () => {
-    this.setState({ isLoading: true })
     const url =
       'https://api.exchangerate.host/timeseries?start_date=' +
       this.state.start_date +
@@ -119,23 +113,23 @@ class Currency extends Component {
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
-        this.setState({ timeSeries: result.rates }, () => this.updateChart())
+        this.setState({ ...this.state, timeSeries: result.rates }, () =>
+          this.updateChart(),
+        )
       })
-    this.setState({ isLoading: false })
   }
   updateChart = () => {
-    this.setState({ isLoading: true })
     const datetime = Object.keys(this.state.timeSeries)
     const daterate = Object.values(this.state.timeSeries)
     var arr = []
     datetime.map((key, id) => {
       return arr.push(daterate[id][this.state.target])
     })
-    this.setState({ chartData: arr, chartLabel: datetime })
-    this.setState({ isLoading: false })
+    this.setState({ ...this.state, chartData: arr, chartLabel: datetime })
   }
 
   render() {
+    // console.log('rendering')
     return (
       <div>
         <Nav title="CurrencyApp" />
@@ -167,7 +161,7 @@ class Currency extends Component {
                   </div>
                 </div>
                 <div className="col text-center py-2">
-                  Current Rate:
+                  Current Rate:{' '}
                   {this.state.rate && !this.state.isLoading
                     ? this.state.rate
                     : 'Loading...'}
@@ -239,6 +233,9 @@ class Currency extends Component {
                 ],
               }}
               options={{
+                animation: {
+                  duration: 0,
+                },
                 scales: {
                   yAxes: [
                     {
