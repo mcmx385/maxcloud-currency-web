@@ -2,8 +2,7 @@ import Nav from '../components/Nav'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Line } from 'react-chartjs-2'
-import { pastDate, todayDate } from '../libraries/datetime'
-import { Button } from '../components/Button'
+import { compareDates, pastDate } from '../libraries/datetime'
 import Dropdown from '../components/Dropdown'
 
 class Currency extends Component {
@@ -17,8 +16,8 @@ class Currency extends Component {
       rate: 0,
       timeSeries: [],
       show_days: 30,
-      start_date: pastDate(30),
-      end_date: todayDate(),
+      start_date: pastDate(31),
+      end_date: pastDate(1),
       amount: 888,
       result: 0,
       isLoading: false,
@@ -66,10 +65,48 @@ class Currency extends Component {
     )
   }
   setShowDays = (days) => {
-    const start_date = pastDate(days)
+    const past_days = compareDates(this.state.end_date, pastDate(1))
+    const start_date = pastDate(parseInt(days) + parseInt(past_days) + 1)
     this.setState({ ...this.state, show_days: days, start_date }, () => {
       this.getRateTS()
     })
+  }
+  setStartDate = (start_date) => {
+    if (start_date > this.state.end_date) {
+      this.setState(
+        {
+          ...this.state,
+          start_date: this.state.end_date,
+          end_date: start_date,
+        },
+        () => this.getRateTS(),
+      )
+    } else {
+      this.setState({ ...this.state, start_date }, () => this.getRateTS())
+    }
+  }
+  setEndDate = (end_date) => {
+    if (end_date < this.state.start_date) {
+      this.setState(
+        {
+          ...this.state,
+          end_date: this.state.start_date,
+          start_date: end_date,
+        },
+        () => {
+          this.getRateTS()
+          this.setEndDate(this.state.end_date)
+        },
+      )
+    } else {
+      const past_days = compareDates(end_date, pastDate(1))
+      const start_date = pastDate(
+        parseInt(this.state.show_days) + parseInt(past_days) + 1,
+      )
+      this.setState({ ...this.state, end_date, start_date }, () =>
+        this.getRateTS(),
+      )
+    }
   }
 
   // Update actions
@@ -129,7 +166,6 @@ class Currency extends Component {
   }
 
   render() {
-    // console.log('rendering')
     return (
       <div>
         <Nav title="CurrencyApp" />
@@ -170,7 +206,7 @@ class Currency extends Component {
               <div className="row">
                 <div className="col">
                   <div className="form-group">
-                    <label htmlFor=""> Amount(From) </label>
+                    <label htmlFor=""> Amount (From) </label>
                     <input
                       type="number"
                       className="form-control"
@@ -181,7 +217,7 @@ class Currency extends Component {
                 </div>
                 <div className="col">
                   <div className="form-group">
-                    <label htmlFor=""> Amount(To) </label>
+                    <label htmlFor=""> Amount (To) </label>
                     <input
                       type="number"
                       className="form-control"
@@ -191,7 +227,7 @@ class Currency extends Component {
                   </div>
                 </div>
               </div>
-              <Button bgcolor="success" submit={true} text="Convert" />
+              {/* <Button bgcolor="success" submit={true} text="Convert" /> */}
             </form>
             <hr />
             <div className="row">
@@ -207,7 +243,7 @@ class Currency extends Component {
                     onChange={(e) => this.setShowDays(e.target.value)}
                   />
                   <span className="input-group-text" id="basic-addon2">
-                    Days
+                    Past Days
                   </span>
                 </div>
               </div>
@@ -222,9 +258,13 @@ class Currency extends Component {
                       this.state.base +
                       ' to ' +
                       this.state.target +
-                      ' in Past ' +
+                      ' (' +
+                      this.state.start_date +
+                      ' to ' +
+                      this.state.end_date +
+                      ') [' +
                       this.state.show_days +
-                      ' Days',
+                      ' days]',
                     data: this.state.chartData,
                     fill: false,
                     backgroundColor: 'rgb(255, 99, 132)',
@@ -247,6 +287,40 @@ class Currency extends Component {
                 },
               }}
             />
+            <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <div className="input-group mb-3">
+                    <span className="input-group-text" id="basic-addon2">
+                      Start Date
+                    </span>
+                    <input
+                      type="date"
+                      name="start_date"
+                      className="form-control"
+                      value={this.state.start_date}
+                      onChange={(e) => this.setStartDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="col">
+                <div className="form-group">
+                  <div className="input-group mb-3">
+                    <span className="input-group-text" id="basic-addon2">
+                      End Date
+                    </span>
+                    <input
+                      type="date"
+                      name="end_date"
+                      className="form-control"
+                      value={this.state.end_date}
+                      onChange={(e) => this.setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -16,3 +16,10 @@ export const pastDate = (days) => {
     past.setDate(past.getDate() - days)
     return getDate(past)
 }
+export const compareDates = (day1, day2) => {
+    var date1 = new Date(day1)
+    var date2 = new Date(day2)
+    var time_diff = date2.getTime() - date1.getTime()
+    var day_diff = time_diff / (1000 * 3600 * 24)
+    return day_diff
+}
