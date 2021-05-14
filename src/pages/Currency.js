@@ -36,6 +36,7 @@ class Currency extends Component {
     } else {
       this.setState({ isError: true, isLoading: false })
     }
+    document.title = 'CurrencyApp'
   }
   renderAvailable = () => {
     return Object.keys(this.state.available).map((key, id) => {
