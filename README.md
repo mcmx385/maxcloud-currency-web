@@ -1,4 +1,4 @@
-# ReactJS Currency Converter and Historical Rates
+# React Currency Converter and Historical Rates
 
 ## Outcome
 Demo site: https://currency-convert-history.herokuapp.com/
